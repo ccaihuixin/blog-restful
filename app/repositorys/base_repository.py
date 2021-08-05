@@ -5,16 +5,19 @@ class BaseRepository(object):
     def find(self, **keyd):
         raise NotImplementedError
 
-    def update(self, entity):
+    def update(self, **kwargs):
         raise NotImplementedError
 
-    def delete(self, entity):
+    def delete(self, **pk):
         raise NotImplementedError
 
-    def create(self, **kw):
+    def create(self, entity):
         raise NotImplementedError
 
     def all(self):
+        raise NotImplementedError
+
+    def pagination(self, page=1, per_page=5, **kwargs):
         raise NotImplementedError
 
 
@@ -43,3 +46,13 @@ class SQLAlchemyReposotory(BaseRepository):
     def delete(self, **pk):
         self.session.query(self.model).filter_by(**pk).delete()
         self.session.commit()
+
+    def pagination(self, page=1, per_page=5, **kwargs):
+        pagination = self.session.query(self.model).filter().order_by(
+            self.model.timestamp.desc()).paginate(page, per_page=5)
+        return pagination
+
+    def search_pagination(self, keyword, page=1, per_page=5):
+        pagination = self.session.query(self.model).filter(
+            self.model.title.like('%{keyword}%'.format(keyword=keyword))).order_by(
+            self.model.timestamp.desc()).paginate(page, per_page=5)

@@ -1,0 +1,27 @@
+{% extends 'common/base.html' %}
+{# 导入分页展示的宏 #}
+{% from 'common/macro.html' import pagination_show %}
+{% block title %}首页{% endblock %}
+{% block page_content %}
+{#    {{ wtf.quick_form(form) }}#}
+    {# 渲染发表博客的表单 #}
+    {% for p in posts %}
+        <hr style="margin-top: 15px;margin-bottom: 15px"/>
+    <div class="media">
+  <div class="media-left">
+    <a href="#">
+      <img class="media-object" src="{{ url_for('static',filename='upload/'+p.user.icon) }}" style="height: 64px;width: 64px" alt="icon">
+    </a>
+      <span>{{ p.user.username }}</span>
+  </div>
+  <div class="media-body">
+      <div style="float:right">{{ moment(p.timestamp).fromNow() }}</div>
+      <h4 class="media-heading"><a href="{{ url_for('article.article_detail',id=p.id) }}">{{ p.title }}</a></h4>
+    {{ p.describe }}
+  </div>
+</div>
+    {% endfor %}
+    <hr/>
+    {# 展示分页导航条 #}
+    <div style="text-align: center">{{ pagination_show(pagination,'article.article_search',keyword=keyword) }}</div>
+{% endblock %}

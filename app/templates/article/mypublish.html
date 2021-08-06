@@ -1,0 +1,26 @@
+{% extends 'common/base.html' %}
+{% from 'common/macro.html' import pagination_show %}
+{% block title %}我的文章{% endblock %}
+{% block page_content %}
+{% for p in posts %}
+        <hr style="margin-top: 20px;margin-bottom: 20px"/>
+    <div class="media">
+  <div class="media-left">
+    <a href="#">
+      <img class="media-object" src="{{ url_for('static',filename='upload/'+p.user.icon) }}" style="height: 72px;width: 72px" alt="icon">
+    </a>
+      <span>{{ p.user.username }}</span>
+  </div>
+  <div class="media-body">
+      <div style="float:right">{{ moment(p.timestamp).fromNow() }}</div>
+      <h4 class="media-heading"><a href=" {{url_for('article.article_detail',id=p.id) }}">{{ p.title }}</a></h4>
+    {{ p.describe }}
+
+  </div>
+        <a href="{{ url_for("article.article_delete",id=p.id) }}" class="media-bottom"><div class="glyphicon glyphicon-trash" aria-hidden="true" style="float: right;height: 20px" aria-label="删除">删除</div></a>
+    <a href="{{ url_for("article.article_change",id=p.id) }}" class="media-bottom"><div class="glyphicon glyphicon-pencil" aria-hidden="true" style="float: right;height: 20px;margin-right: 15px"  aria-label="修改">修改</div></a>
+</div>
+    {% endfor %}
+    <hr/>
+    <div style="text-align: center">{{ pagination_show(pagination,'article.mypublish') }}</div>
+{% endblock %}

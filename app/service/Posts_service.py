@@ -6,4 +6,4 @@ class PostsService:
     posts_repository = inject.attr(PostsRepository)
 
     def pagination(self, page=1, per_page=5, **kwargs):
-        self.posts_repository
+        return self.posts_repository.pagination(page, per_page, **kwargs)

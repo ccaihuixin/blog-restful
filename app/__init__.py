@@ -3,8 +3,6 @@ from app.config import config
 from app.extensions import config_extensions
 from app.api import config_blueprint
 import inject
-
-from app.models import CommentLike, Comment, User, Posts
 from app.repositorys import SQLAlchemyReposotory, CommentLikeRepository, CommentRepository, UserRepository, \
     PostsRepository
 from app.service import CommentLikeService, CommentService, UserService, PostsService
@@ -36,6 +34,7 @@ def config_errorhandler(app):
 
 
 def config_ioc(binder):
+    from app.models import CommentLike, Comment, User, Posts
     session = extensions.db.session
     CommentLikeSQL = db.CommentLikeSQL.init_SQLAlchemyReposotory(CommentLike, session)
     CommentSQL = db.CommentSQL.init_SQLAlchemyReposotory(Comment, session)

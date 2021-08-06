@@ -10,6 +10,7 @@ from app.repositorys import SQLAlchemyReposotory, CommentLikeRepository, Comment
 from app.service import CommentLikeService, CommentService, UserService, PostsService
 import app.db
 
+
 def create_app(config_name):
     # 创建应用实例
     app = Flask(__name__)
@@ -36,10 +37,10 @@ def config_errorhandler(app):
 
 def config_ioc(binder):
     session = extensions.db.session
-    db.CommentLikeSQL = SQLAlchemyReposotory(CommentLike, session)
-    db.CommentSQL = SQLAlchemyReposotory(Comment, session)
-    db.UserSQL = SQLAlchemyReposotory(User, session)
-    db.PostsSQL = SQLAlchemyReposotory(Posts, session)
+    CommentLikeSQL = db.CommentLikeSQL.init_SQLAlchemyReposotory(CommentLike, session)
+    CommentSQL = db.CommentSQL.init_SQLAlchemyReposotory(Comment, session)
+    UserSQL = db.UserSQL.init_SQLAlchemyReposotory(User, session)
+    PostsSQL = db.PostsSQL.init_SQLAlchemyReposotory(Posts, session)
 
     Comment_repository = CommentRepository()
     CommentLike_repository = CommentLikeRepository()
@@ -51,10 +52,10 @@ def config_ioc(binder):
     User_service = UserService()
     Posts_service = PostsService()
 
-    binder.bind(db.CommentLikeSQL, db.CommentLikeSQL)
-    binder.bind(db.CommentSQL, db.CommentSQL)
-    binder.bind(db.UserSQL, db.UserSQL)
-    binder.bind(db.PostsSQL, db.PostsSQL)
+    binder.bind(db.CommentLikeSQL, CommentLikeSQL)
+    binder.bind(db.CommentSQL, CommentSQL)
+    binder.bind(db.UserSQL, UserSQL)
+    binder.bind(db.PostsSQL, PostsSQL)
 
     binder.bind(CommentRepository, Comment_repository)
     binder.bind(CommentLikeRepository, CommentLike_repository)

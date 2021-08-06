@@ -22,7 +22,10 @@ class BaseRepository(object):
 
 
 class SQLAlchemyReposotory(BaseRepository):
-    def __init__(self, model, session):
+    def __init__(self):
+        pass
+
+    def init_SQLAlchemyReposotory(self,model,session):
         self.model = model
         self.session = session
 

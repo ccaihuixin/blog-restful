@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.extensions import db
 class Posts(db.Model):
     __tablename__ = 'posts'

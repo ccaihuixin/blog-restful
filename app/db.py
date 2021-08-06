@@ -1,6 +1,7 @@
 from sqlalchemy import null
 
-CommentLikeSQL = null
-CommentSQL=null
-UserSQL=null
-PostsSQL=null
+from app.repositorys import SQLAlchemyReposotory
+CommentLikeSQL = SQLAlchemyReposotory()
+CommentSQL = SQLAlchemyReposotory()
+UserSQL = SQLAlchemyReposotory()
+PostsSQL = SQLAlchemyReposotory()

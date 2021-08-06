@@ -1,0 +1,2 @@
+class CommentLikeRepository:
+    pass

@@ -1,1 +1,5 @@
 from .base_repository import SQLAlchemyReposotory
+from .Comment_repository import CommentRepository
+from .CommentLike_repository import CommentLikeRepository
+from .User_repository import UserRepository
+from .Posts_repository import PostsRepository

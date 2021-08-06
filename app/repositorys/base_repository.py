@@ -56,3 +56,4 @@ class SQLAlchemyReposotory(BaseRepository):
         pagination = self.session.query(self.model).filter(
             self.model.title.like('%{keyword}%'.format(keyword=keyword))).order_by(
             self.model.timestamp.desc()).paginate(page, per_page=5)
+        return pagination

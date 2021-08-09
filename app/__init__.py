@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from app.config import config
 from app.extensions import config_extensions
-from app.api import config_blueprint
+
 import inject
 from app.repositorys import SQLAlchemyReposotory, CommentLikeRepository, CommentRepository, UserRepository, \
     PostsRepository
@@ -18,8 +18,10 @@ def create_app(config_name):
     config[config_name].init_app(app)
     # 配置相关扩展
     config_extensions(app)
-    # 注册蓝本
+
     inject.configure(config_ioc)
+    # 注册蓝本
+    from app.api import config_blueprint
     config_blueprint(app)
     # 配置错误显示
     config_errorhandler(app)

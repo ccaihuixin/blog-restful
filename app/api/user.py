@@ -1,24 +1,28 @@
+import inject
 from flask import Blueprint, render_template, flash, redirect, url_for, current_app, request
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from app.service import UserService
 from app.forms import RegisterForm, LoginForm, PasswordForm, IconForm
 from app.email import send_mail
 from app.models import User
-from app.extensions import db, photos
+from app.extensions import db, photos, login_manager
 from flask_login import login_user, logout_user, login_required, current_user
 import os
 from PIL import Image
 
 user = Blueprint('user', __name__)
 
+user_service = inject.instance(UserService)
+
 
 @user.route('/register/', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+
     if form.validate_on_submit():
         # 创建对象，写入数据库
         u = User(username=form.username.data, password=form.password.data, email=form.email.data)
-        db.session.add(u)
-        db.session.commit()
-        # 因为下面产生token时需要用户id 此时没有用户id
+        user_service.register(u)
         token = u.generate_activate_token()
         # 发送激活邮件
         send_mail(form.email.data, '账户激活', 'email/account_activate', token=token, username=form.username.data)
@@ -28,20 +32,30 @@ def register():
 
 
 @user.route('/activate/<token>')
-def activate(token):
-    if User.check_activate_token(token):
-        flash('账户激活成功')
+def activate(token):  # 新用户激活
+    s = Serializer(current_app.config['SECRET_KEY'])
+    try:
+        data = s.loads(token)
+    except:
         return redirect(url_for('user.login'))
-    else:
+    newuser = user_service.get_user(id=data.get('id'))
+    if newuser is None:
+        # 不存在此用户
         flash('账户激活失败')
         return redirect(url_for('main.index'))
+    if not newuser.confirmed:
+        # 账户没有激活时才激活
+        newuser.confirmed = True
+        user_service.update_user(id=newuser.id, entity=newuser.all_to_dict())
+    flash('账户激活成功')
+    return redirect(url_for('user.login'))
 
 
 @user.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        u = User.query.filter_by(username=form.username.data).first()
+        u = user_service.get_user(username=form.username.data)  # 获取用户
         if u is None:
             flash('无效用户名')
         elif u.verify_password(form.password.data):
@@ -52,6 +66,13 @@ def login():
         else:
             flash('无效密码')
     return render_template('user/login.html', form=form)
+
+
+# 回调根据id查询用户是谁 返回用户
+@login_manager.user_loader
+def loader_user(user_id):
+    # return User.query.get(int(user_id))
+    return user_service.get_user(id=int(user_id))
 
 
 @user.route('/logout/')
@@ -76,7 +97,8 @@ def change_password():
     if form.validate_on_submit():
         if current_user.verify_password(form.old_pwd.data):
             current_user.password = form.new_pwd.data
-            db.session.add(current_user)
+            # db.session.add(current_user)
+            user_service.update_user(id=current_user.id, entity=current_user.all_to_dict())
             flash('密码修改成功')
             return redirect(url_for('main.index'))
         else:
@@ -104,7 +126,8 @@ def change_icon():
             os.remove(os.path.join(current_app.config['UPLOADED_PHOTOS_DEST'], current_user.icon))
         # 保存新的头像
         current_user.icon = name
-        db.session.add(current_user)
+        # db.session.add(current_user)
+        user_service.update_user(id=current_user.id, entity=current_user.all_to_dict())
         flash('头像已更换')
     return render_template('user/change_icon.html', form=form)
 

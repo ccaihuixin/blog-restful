@@ -25,7 +25,7 @@ class SQLAlchemyReposotory(BaseRepository):
     def __init__(self):
         pass
 
-    def init_SQLAlchemyReposotory(self,model,session):
+    def init_SQLAlchemyReposotory(self, model, session):
         self.model = model
         self.session = session
 
@@ -35,8 +35,8 @@ class SQLAlchemyReposotory(BaseRepository):
     def find(self, **keys):
         return self.session.query(self.model).filter_by(**keys).all()
 
-    def update(self, **kwargs):
-        self.session.query(self.model).filter_by(id=int(kwargs['id'])).update(**kwargs)
+    def update(self, id, entity):
+        self.session.query(self.model).filter_by(id=id).update(entity)
         self.session.commit()
 
     def all(self):

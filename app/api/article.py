@@ -132,7 +132,6 @@ def article_search():
 # 请求参数:news_id,comment,parent_id, g.user
 # 返回值: errno,errmsg,评论字典
 @article.route('/article_comment', methods=['POST'])
-@login_required
 def article_comment():
     """
     1. 判断用户是否登陆
@@ -146,8 +145,7 @@ def article_comment():
     """
     # 1. 判断用户是否登陆
     if not current_user.is_authenticated:
-        return jsonify(errno='RET.NODATA', errmsg="用户未登录")
-
+        return jsonify(errno=RET.NODATA, errmsg="用户未登录")
     # 2. 获取请求参数
     post_id = request.json.get("post_id")
     content = request.json.get("comment")
@@ -164,9 +162,9 @@ def article_comment():
         post = Posts.query.get(post_id)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
+        return jsonify(errno=RET.DBERR, errmsg="获取文章失败")
 
-    if not post: return jsonify(errno=RET.NODATA, errmsg="新闻不存在")
+    if not post: return jsonify(errno=RET.NODATA, errmsg="文章不存在")
 
     # 5. 创建评论对象,设置属性
     comment = Comment()

@@ -42,24 +42,6 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
         return s.dumps({'id': self.id})
 
-    # 激活账户时的token校验,校验时还不知道用户信息，需要静态方法
-    @staticmethod
-    def check_activate_token(token):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except:
-            return False
-        user = User.query.get(data.get('id'))
-        if user is None:
-            # 不存在此用户
-            return False
-        if not user.confirmed:
-            # 账户没有激活时才激活
-            user.confirmed = True
-            db.session.add(user)
-        return True
-
     def to_dict(self):
         resp_dict = {
             "id": self.id,
@@ -68,7 +50,19 @@ class User(UserMixin, db.Model):
         }
         return resp_dict
 
-# 回调根据id查询用户是谁 返回用户
-@login_manager.user_loader
-def loader_user(user_id):
-    return User.query.get(int(user_id))
+    def all_to_dict(self):
+        resp_dict = {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "icon": self.icon,
+            "password_hash": self.password_hash,
+            "confirmed": self.confirmed
+        }
+        return resp_dict
+
+
+# # 回调根据id查询用户是谁 返回用户
+# @login_manager.user_loader
+# def loader_user(user_id):
+#     return User.query.get(int(user_id))

@@ -30,10 +30,13 @@ class SQLAlchemyReposotory(BaseRepository):
         self.session = session
 
     def get(self, **pk):
-        return self.session.query(self.model).filter_by(**pk).one()
+        return self.session.query(self.model).filter_by(**pk).first()
 
     def find(self, **keys):
         return self.session.query(self.model).filter_by(**keys).all()
+
+    def find_and_sort_by_time(self, **keys):
+        return self.session.query(self.model).filter_by(**keys).order_by(self.model.create_time.desc()).all()
 
     def update(self, id, entity):
         self.session.query(self.model).filter_by(id=id).update(entity)
@@ -51,12 +54,12 @@ class SQLAlchemyReposotory(BaseRepository):
         self.session.commit()
 
     def pagination(self, page=1, per_page=5, **kwargs):
-        pagination = self.session.query(self.model).filter().order_by(
+        pagination = self.session.query(self.model).filter_by(**kwargs).order_by(
             self.model.timestamp.desc()).paginate(page, per_page=5)
         return pagination
 
     def search_pagination(self, keyword, page=1, per_page=5):
         pagination = self.session.query(self.model).filter(
             self.model.title.like('%{keyword}%'.format(keyword=keyword))).order_by(
-            self.model.timestamp.desc()).paginate(page, per_page=5)
+            self.model.timestamp.desc()).paginate(page, per_page=per_page)
         return pagination

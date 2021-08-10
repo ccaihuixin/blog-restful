@@ -101,7 +101,7 @@ $(function(){
             }
 
             $.ajax({
-                url: "/article/article_like",
+                url: "/article/comment_like",
                 type: "post",
                 contentType: "application/json",
                 data: JSON.stringify(params),

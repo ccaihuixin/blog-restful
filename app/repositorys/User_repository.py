@@ -3,7 +3,6 @@ from app.db import UserSQL
 
 
 class UserRepository:
-    UserSQL = inject.attr(UserSQL)
 
     def create_user(self, entity):
         UserSQL.create(entity=entity)

@@ -25,3 +25,9 @@ class Comment(db.Model):
             "like_count": self.like_count
         }
         return resp_dict
+    def update_dict(self):
+        resp_dict={
+            "id":self.id,
+            "like_count":self.like_count
+        }
+        return resp_dict

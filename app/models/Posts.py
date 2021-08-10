@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from app.extensions import db
+
+
 class Posts(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,5 +24,15 @@ class Posts(db.Model):
             "content": self.content,
             "comments_count": self.comments.count(),
             "author": self.user.to_dict() if self.user else None
+        }
+        return resp_dict
+
+    def update_dict(self):
+        resp_dict = {
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'describe': self.describe,
+            'timestamp': self.timestamp,
         }
         return resp_dict
